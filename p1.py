@@ -17,27 +17,29 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
         Otherwise, return None.
 
     """
+    initial_position = (initial_position, 0)
     queue = [initial_position]
-    visitedFrom = {}
+    dist = {initial_position[0] : 0}
+    prev = {}
+
     while queue:
-        current_node = queue[0]
-        if current_node == destination:
-            return path_to(destination, graph, visitedFrom)
+        current_node = heappop(queue)
+        if current_node[0] == destination:
+            path = []
+            n = destination
+            while n in prev:
+                path.insert(0, prev[n])
+                n =  prev[n]
+            return path
         else:
-            for new in adj(graph, current_node):
-                if new not in visitedFrom:
-                    visitedFrom[new] = current_node
-                    queue.insert(0, new)
-    return(-1)
-
-def path_to(destination, graph, visitedFrom):
-    path = []
-    current_node = destination
-    while current_node in visitedFrom:
-        path.insert(0, visitedFrom[current_node])
-        current_node = visitedFrom[current_node]
-    return path
-
+            for adj_node in adj(graph, current_node[0]):
+                #print('adj: ', adj_node)
+                alt = dist[current_node[0]] + adj_node[1]
+                if adj_node[0] not in dist or alt < dist[adj_node[0]]:
+                    prev[adj_node[0]] = current_node[0]
+                    dist[adj_node[0]] = alt
+                    heappush(queue, adj_node)
+    return(-1)   
 
 def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     """ Calculates the minimum cost to every reachable cell in a graph from the initial_position.
@@ -71,66 +73,49 @@ def navigation_edges(level, cell):
              ((1,1), 1.4142135623730951),
              ... ]
     """
+    xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
+    dimX = max(xs) - 1
+    dimY = max(ys) - 1
 
-    #each navigable cell in a level is stored in a dictionary within the level object called spaces.
-    #the dictionary uses a tuple representing cartesian coordinates (x, y) as the key, and
-    #the weight of the edge as the value.
-
-    #Look up the cell in level['spaces'] 
-    #use some math to get the cells above, below, right, and left of the current cell, 
-    #and all the diagonals
-    #return a list of tuples of the form ((x, y), weight)
-
-    #get the dimensions of the level
-    dimX = 0
-    dimY = 0
-
-    for wall in level['walls']:
-        if(dimX < wall[0]):
-            dimX = wall[0]
-        if(dimY < wall[1]):
-            dimY = wall[1]
-
-    dimX -= 1
-    dimY -= 1
-
-    adjList = ()
+    adjList = []
+    #print('cell: ', cell)
     x = cell[0]
     y = cell[1]
 
+    def checkAdjacent(coords, level):
+        if coords in level['spaces']:
+            return (coords, level['spaces'][coords])
+
     #top-left
     if x > 1 and y > 1:
-        adjCell = (x -1, y - 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x - 1, y - 1), level))
     #above
     if y > 1:
-        adjCell = (x, y - 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x, y - 1), level))
     #top-right
     if x < dimX and y > 1:
-        adjCell = (x + 1, y - 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x + 1, y - 1), level))
     #right
     if x < dimX:
-        adjCell = (x + 1, y)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x + 1, y), level))
     #bottom-right
     if y < dimY and x < dimX:
-        adjCell = (x + 1, y + 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x + 1, y + 1), level))
     #below
     if y < dimY:
-        adjCell = (x, y + 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x, y + 1), level))
     #bottom-left
     if y < dimY and x > 1:
-        adjCell = (x - 1, y + 1)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x - 1, y + 1), level))
     #left
     if x > 1:
-        adjCell = (x - 1, y)
-        adjList += (adjCell, level['spaces'][adjCell])
+        adjList.append(checkAdjacent((x - 1, y), level))
    
+    while None in adjList:
+        adjList.remove(None)
+
+    #print('adjList: ', adjList)
+
     return adjList
     
 
@@ -191,8 +176,9 @@ if __name__ == '__main__':
 
     # Retrieve the source coordinates from the level.
     src = level['waypoints']['a']
+    print(src)
     print(level)
-    destination = level['waypoints']['b']
+    destination = level['waypoints']['e']
 
     print(dijkstras_shortest_path(src, destination, level, navigation_edges))
     #filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
