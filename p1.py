@@ -75,41 +75,48 @@ def navigation_edges(level, cell):
              ... ]
     """
     xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
-    dimX = max(xs) - 1
-    dimY = max(ys) - 1
+    dimX = max(xs)
+    dimY = max(ys)
 
     adjList = []
     #print('cell: ', cell)
     x = cell[0]
     y = cell[1]
 
-    def checkAdjacent(coords, level):
-        if coords in level['spaces']:
-            return (coords, level['spaces'][coords])
+    def checkAdjacent(coords, level, diagonal=False):
+        startCell = (cell, level['spaces'][cell])
+        print('startCell: ', startCell, startCell[0], startCell[1])
+        if coords in level['spaces'] and not diagonal:
+            return (coords, level['spaces'][coords] * 0.5 + startCell[1] * 0.5)
+        elif coords in level['spaces'] and diagonal:
+            adj =  (coords, level['spaces'][coords])
+            if adj != None:
+                return (adj[0], adj[1] * sqrt(2) * 0.5 + startCell[1] * sqrt(2) * 0.5)
+        return None
 
     #top-left
-    if x > 1 and y > 1:
-        adjList.append(checkAdjacent((x - 1, y - 1), level))
+    if x > 0 and y > 0:
+        adjList.append(checkAdjacent((x - 1, y - 1), level, True))
     #above
-    if y > 1:
+    if y > 0:
         adjList.append(checkAdjacent((x, y - 1), level))
     #top-right
-    if x < dimX and y > 1:
-        adjList.append(checkAdjacent((x + 1, y - 1), level))
+    if x < dimX and y > 0:
+        adjList.append(checkAdjacent((x + 1, y - 1), level, True))
     #right
     if x < dimX:
         adjList.append(checkAdjacent((x + 1, y), level))
     #bottom-right
     if y < dimY and x < dimX:
-        adjList.append(checkAdjacent((x + 1, y + 1), level))
+        adjList.append(checkAdjacent((x + 1, y + 1), level, True))
     #below
     if y < dimY:
         adjList.append(checkAdjacent((x, y + 1), level))
     #bottom-left
-    if y < dimY and x > 1:
-        adjList.append(checkAdjacent((x - 1, y + 1), level))
+    if y < dimY and x > 0:
+        adjList.append(checkAdjacent((x - 1, y + 1), level, True))
     #left
-    if x > 1:
+    if x > 0:
         adjList.append(checkAdjacent((x - 1, y), level))
    
     while None in adjList:
