@@ -30,6 +30,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
             while n in prev:
                 path.insert(0, prev[n])
                 n =  prev[n]
+            path.append(destination)
             return path
         else:
             for adj_node in adj(graph, current_node[0]):
@@ -180,7 +181,8 @@ if __name__ == '__main__':
     print(level)
     destination = level['waypoints']['e']
 
-    print(dijkstras_shortest_path(src, destination, level, navigation_edges))
+    path = dijkstras_shortest_path(src, destination, level, navigation_edges)
+    show_level(level, path)
     #filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
 
     # Use this function call to find the route between two waypoints.
