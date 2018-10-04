@@ -49,53 +49,60 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
 		Returns:
         A dictionary, mapping destination cells to the cost of a path from the initial_position.
 		"""
-
-    #distance list is a heap (distance, cell)
-    dist = [(0.0, initial_position)]
-
-    #prev list is a dictionary cell: (prev, cost)
-    prev = {initial_position: (None, 0)}
     
     #to_return is a dictionary of costs
     to_return = {initial_position: 0}
     
-    #populate the set of all possible destinations in a list called unvisited
+    #populate the set of all possible (non-wall) destinations in a list called unvisited
     unvisited = list(graph['spaces'])
+
+    #the path to a wall has infinite cost, as walls have infinite cost
     for cell in graph['walls']:
-        unvisited.append(cell)
+        to_return[cell] = inf
 
     print('unvisited size: ', len(unvisited))
 
-    #dijkstra!
     while unvisited:
-        #get the next current_node
-        (current_cost, current_cell) = heappop(dist)
-        #it's being visited now, so remove it from unvisited
-        unvisited.remove(current_cell) 
+        next_cell = unvisited.pop()
 
-        #find adjacent cells to that
-        adjacent_cells = adj(graph, current_cell)
+        #catch the initial_position when it comes up, as a path of size 1 will mess up the code
+        if next_cell == initial_position:
+            to_return[next_cell] = 0
+            continue
+        
+        path = dijkstras_shortest_path(initial_position, next_cell, graph, adj)
 
-        #same as last time, only now we gotta account for accumulating costs
-        for (new_cell, new_cost) in adjacent_cells:
-            new_total_cost = new_cost + current_cost
-            if new_cell in unvisited:
-                #check to see if this cell is already in the heap (by checking prev)
-                if new_cell in prev:
-                    (_, old_cost) = prev[new_cell]
-                    #if this is a better way to get to this cell, replace the old one
-                    if old_cost > new_total_cost:
-                        dist.remove((old_cost, new_cell))
-                        heapify(dist)
-                        heappush(dist, (new_total_cost, new_cell))
-                        prev[new_cell] = (current_cell, new_total_cost)
-                        to_return[new_cell] = new_cost
-                else:
-                    heappush(dist, (new_total_cost, new_cell))
-                    prev[new_cell] = (current_cell, new_total_cost)
-                    to_return[new_cell] = new_total_cost
+        print('---------')
+
+        #get the accumulated cost of each node in the path
+        total_cost = 0
+        prev = initial_position
+        for node in path:
+            if node in level['walls']:
+                print("ERROR: path contains a wall: ", node)
+                continue
+            elif node != initial_position:
+                total_cost += do_math(level, prev, node)
+            prev = node
+
+        #put it in the dictionary
+        to_return[next_cell] = total_cost
 
     return to_return
+
+def do_math(level, from_cell, to_cell):
+    xf, yf = from_cell
+    xt, yt = to_cell
+
+    from_cost = level['spaces'][from_cell]
+    to_cost = level['spaces'][to_cell]
+
+    if xf==xt or yf==yt:
+        cost = (from_cost+to_cost) * 0.5
+    else:
+        cost = (from_cost+to_cost) * (0.5 * sqrt(2))
+
+    return cost
 
 
 def navigation_edges(level, cell):
