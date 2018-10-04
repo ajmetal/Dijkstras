@@ -21,13 +21,13 @@ def dijkstras_shortest_path(source, destination, level, adj):
     #print(source, destination)
 
     source = (source, 0)
-    queue = [source]
+    queue = [(source[1], source[0])]
     dist = {source[0] : 0}
     prev = {}
 
     while queue:
         current_node = heappop(queue)
-        if current_node[0] == destination:
+        if current_node[1] == destination:
             path = []
             n = destination
             while n in prev:
@@ -37,12 +37,14 @@ def dijkstras_shortest_path(source, destination, level, adj):
             #print(path)
             return path
         else:
-            for adj_node in adj(level, current_node[0]):
-                alt = dist[current_node[0]] + adj_node[1]
-                if adj_node[0] not in dist or alt < dist[adj_node[0]]:
-                    prev[adj_node[0]] = current_node[0]
-                    dist[adj_node[0]] = alt
+            for adj_node in adj(level, current_node[1]):
+                adj_node = (adj_node[1], adj_node[0])
+                alt = dist[current_node[1]] + adj_node[0]
+                if adj_node[1] not in dist or alt < dist[adj_node[1]]:
+                    prev[adj_node[1]] = current_node[1]
+                    dist[adj_node[1]] = alt
                     heappush(queue, adj_node)
+                    
     return None   
 
 def dijkstras_shortest_path_to_all(source, level, adj):
@@ -211,7 +213,7 @@ if __name__ == '__main__':
     path = dijkstras_shortest_path(src, dst, level, navigation_edges)
 
     # Use this function call to find the route between two waypoints.
-    #test_route(filename, src_waypoint, dst_waypoint)
+    test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
     cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
