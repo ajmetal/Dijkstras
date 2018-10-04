@@ -14,14 +14,14 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
         If a path exits, return a list containing all cells from initial_position to destination.
         Otherwise, return None.
     """
-    initial_position = (initial_position, 0)
-    queue = [initial_position]
-    dist = {initial_position[0] : 0}
+    #initial_position = (initial_position, 0)
+    queue = [(0, initial_position)]
+    dist = {initial_position : 0}
     prev = {}
 
     while queue:
-        current_node = heappop(queue)
-        if current_node[0] == destination:
+        current_cost, current_cell = heappop(queue)
+        if current_cell == destination:
             path = []
             n = destination
             while n in prev:
@@ -30,13 +30,13 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
             path.append(destination)
             return path
         else:
-            for adj_node in adj(graph, current_node[0]):
+            for adj_cell, adj_cost in adj(graph, current_cell):
                 #print('adj: ', adj_node)
-                alt = dist[current_node[0]] + adj_node[1]
-                if adj_node[0] not in dist or alt < dist[adj_node[0]]:
-                    prev[adj_node[0]] = current_node[0]
-                    dist[adj_node[0]] = alt
-                    heappush(queue, adj_node)
+                alt = dist[current_cell] + adj_cost
+                if adj_cell not in dist or alt < dist[adj_cell]:
+                    prev[adj_cell] = current_cell
+                    dist[adj_cell] = alt
+                    heappush(queue, (adj_cost, adj_cell))
     return(-1) 
 
 
@@ -60,7 +60,7 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     for cell in graph['walls']:
         to_return[cell] = inf
 
-    print('unvisited size: ', len(unvisited))
+    counter = 0
 
     while unvisited:
         next_cell = unvisited.pop()
@@ -72,15 +72,17 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
         
         path = dijkstras_shortest_path(initial_position, next_cell, graph, adj)
 
-        print('---------')
+        counter += 1
+        print(counter)
 
         #get the accumulated cost of each node in the path
         total_cost = 0
         prev = initial_position
         for node in path:
             if node in level['walls']:
-                print("ERROR: path contains a wall: ", node)
-                continue
+                print("ERROR: path contains a wall: ", path)
+                total_cost = 9999999
+                break
             elif node != initial_position:
                 total_cost += do_math(level, prev, node)
             prev = node
@@ -244,4 +246,4 @@ if __name__ == '__main__':
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-    cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
+    cost_to_all_cells(filename, src_waypoint, 'my_costs_4.csv')
