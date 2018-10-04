@@ -1,6 +1,6 @@
 from p1_support import load_level, show_level, save_level_costs
 from math import inf, sqrt
-from heapq import heappop, heappush
+from heapq import heappop, heappush, heapify
 
 
 def dijkstras_shortest_path(initial_position, destination, graph, adj):
@@ -37,7 +37,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
                     prev[adj_node[0]] = current_node[0]
                     dist[adj_node[0]] = alt
                     heappush(queue, adj_node)
-    return(-1)   
+    return(-1) 
 
 
 def dijkstras_shortest_path_to_all(initial_position, graph, adj):
@@ -109,51 +109,42 @@ def navigation_edges(level, cell):
              ((1,1), 1.4142135623730951),
              ... ]
     """
-    xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
-    dimX = max(xs) - 1
-    dimY = max(ys) - 1
+    (x,y) = cell
+    adjacents = []
+    if cell in level['spaces']:
+        current_cell_cost = level['spaces'][cell]
+    else:
+        current_cell_cost = inf
 
-    adjList = []
-    #print('cell: ', cell)
-    x = cell[0]
-    y = cell[1]
-
-    def checkAdjacent(coords, level):
-        if coords in level['spaces']:
-            return (coords, level['spaces'][coords])
-
-    #top-left
-    if x > 1 and y > 1:
-        adjList.append(checkAdjacent((x - 1, y - 1), level))
-    #above
-    if y > 1:
-        adjList.append(checkAdjacent((x, y - 1), level))
-    #top-right
-    if x < dimX and y > 1:
-        adjList.append(checkAdjacent((x + 1, y - 1), level))
-    #right
-    if x < dimX:
-        adjList.append(checkAdjacent((x + 1, y), level))
-    #bottom-right
-    if y < dimY and x < dimX:
-        adjList.append(checkAdjacent((x + 1, y + 1), level))
-    #below
-    if y < dimY:
-        adjList.append(checkAdjacent((x, y + 1), level))
-    #bottom-left
-    if y < dimY and x > 1:
-        adjList.append(checkAdjacent((x - 1, y + 1), level))
-    #left
-    if x > 1:
-        adjList.append(checkAdjacent((x - 1, y), level))
-   
-    while None in adjList:
-        adjList.remove(None)
-
-    #print('adjList: ', adjList)
-
-    return adjList
     
+    north = (x,y-1)
+    south = (x,y+1)
+    west  = (x-1,y)
+    east  = (x+1,y)
+
+    for each in (north, south, east, west):
+        if each in level['spaces']:
+            each_cost = level['spaces'][each]
+            actual_cost = (each_cost + current_cell_cost) * 0.5
+            adjacents.insert(0, (each, actual_cost))
+        if each in level['walls']:
+            adjacents.insert(0, (each, inf))
+
+    northwest = (x-1,y-1)
+    northeast = (x+1,y-1)
+    southwest = (x-1,y+1)
+    southeast = (x+1,y+1)
+
+    for each in (northwest, northeast, southwest, southeast):
+        if each in level['spaces']:
+            each_cost = level['spaces'][each]
+            actual_cost = (each_cost + current_cell_cost) * (0.5 * sqrt(2))            
+            adjacents.insert(0, (each, actual_cost))
+        if each in level['walls']:
+            adjacents.insert(0, (each, inf))
+
+    return adjacents
+
 
 def test_route(filename, src_waypoint, dst_waypoint):
     """ Loads a level, searches for a path between the given waypoints, and displays the result.
@@ -214,10 +205,12 @@ if __name__ == '__main__':
 
     path = dijkstras_shortest_path(src, destination, level, navigation_edges)
     show_level(level, path)
-    #filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
+
+    
+    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
 
     # Use this function call to find the route between two waypoints.
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-#cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
+    cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
