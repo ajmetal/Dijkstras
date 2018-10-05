@@ -78,6 +78,49 @@ def show_level(level, path=[]):
     print(''.join(chars))
 
 
+def save_level(filename, level, path=[]):
+    """ Prints a level to a text file.
+
+    Args:
+        level: The level to be displayed.
+        path: A continuous path to be displayed over the level, if provided.
+
+    """
+    xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
+    x_lo, x_hi = min(xs), max(xs)
+    y_lo, y_hi = min(ys), max(ys)
+
+    path_cells = set(path)
+
+    chars = []
+    inverted_waypoints = {point: char for char, point in level['waypoints'].items()}
+
+    for j in range(y_lo, y_hi + 1):
+        for i in range(x_lo, x_hi + 1):
+
+            cell = (i, j)
+            if cell in path_cells:
+                chars.append('*')
+            elif cell in level['walls']:
+                chars.append('X')
+            elif cell in inverted_waypoints:
+                chars.append(inverted_waypoints[cell])
+            elif cell in level['spaces']:
+                chars.append(str(int(level['spaces'][cell])))
+            else:
+                chars.append(' ')
+
+        chars.append('\n')
+
+
+    with open(filename, 'w') as f:
+        s = ''.join(chars)
+        f.write(s)
+
+    print("Saved file: ", filename)
+
+
+
 def save_level_costs(level, costs, filename='distance_map.csv'):
     """ Displays cell costs from an origin point over the given level.
 
