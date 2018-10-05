@@ -1,4 +1,4 @@
-from p1_support import load_level, show_level, save_level_costs
+from p1_support import load_level, show_level, save_level_costs, save_level
 from math import inf, sqrt
 from heapq import heappop, heappush, heapify
 
@@ -57,12 +57,6 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     #populate the set of all possible (non-wall) destinations in a list called unvisited
     unvisited = list(graph['spaces'])
 
-    #the path to a wall has infinite cost, as walls have infinite cost
-    #for cell in graph['walls']:
-        #to_return[cell] = inf
-
-    counter = 0
-
     while unvisited:
         #get next cell and the path to it
         next_cell = unvisited.pop()
@@ -118,7 +112,6 @@ def navigation_edges(level, cell):
     dimY = max(ys)
 
     adjList = []
-    #print('cell: ', cell)
     x = cell[0]
     y = cell[1]
 
@@ -165,8 +158,6 @@ def navigation_edges(level, cell):
    
     while None in adjList:
         adjList.remove(None)
-
-    #print('adjList: ', adjList)
 
     return adjList
 
@@ -231,11 +222,16 @@ if __name__ == '__main__':
     path = dijkstras_shortest_path(src, destination, level, navigation_edges)
     show_level(level, path)
 
+    save_level('path_file.txt', level, path)
     
+<<<<<<< HEAD
     filename, src_waypoint, dst_waypoint = 'test_maze.txt', 'a','e'
+=======
+    #filename, src_waypoint, dst_waypoint = 'my_maze.txt', 'a','d'
+>>>>>>> 50256acc3cdb06dfdc48a1c656ed8ea2bd83a0d0
 
     # Use this function call to find the route between two waypoints.
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-    cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
+    #cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
