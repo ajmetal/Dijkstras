@@ -2,7 +2,6 @@ from p1_support import load_level, show_level, save_level_costs
 from math import inf, sqrt
 from heapq import heappop, heappush
 
-
 def dijkstras_shortest_path(source, destination, level, adj):
     """ Searches for a minimal cost path through a level using Dijkstra's algorithm.
 
@@ -18,8 +17,6 @@ def dijkstras_shortest_path(source, destination, level, adj):
 
     """
 
-    #print(source, destination)
-
     source = (source, 0)
     queue = [(source[1], source[0])]
     dist = {source[0] : 0}
@@ -34,15 +31,15 @@ def dijkstras_shortest_path(source, destination, level, adj):
                 path.insert(0, prev[n])
                 n =  prev[n]
             path.append(destination)
-            #print(path)
             return path
         else:
             for adj_node in adj(level, current_node[1]):
                 adj_node = (adj_node[1], adj_node[0])
-                alt = dist[current_node[1]] + adj_node[0]
-                if adj_node[1] not in dist or alt < dist[adj_node[1]]:
+                new_cost = dist[current_node[1]] + adj_node[0]
+                if adj_node[1] not in dist or new_cost < dist[adj_node[1]]:
+                #if adj_node[1] not in dist or alt < dist[current_node[1]]:
                     prev[adj_node[1]] = current_node[1]
-                    dist[adj_node[1]] = alt
+                    dist[adj_node[1]] = new_cost
                     heappush(queue, adj_node)
                     
     return None   
@@ -105,18 +102,17 @@ def navigation_edges(level, cell):
     dimY = max(ys)
 
     adjList = []
-    #print('cell: ', cell)
     x = cell[0]
     y = cell[1]
 
     def checkAdjacent(coords, level, diagonal=False):
         startCell = (cell, level['spaces'][cell])
         if coords in level['spaces'] and not diagonal:
-            return (coords, level['spaces'][coords] * 0.5 + startCell[1] * 0.5)
+            return (coords, (level['spaces'][coords] + startCell[1]) * 0.5)
         elif coords in level['spaces'] and diagonal:
             adj =  (coords, level['spaces'][coords])
             if adj != None:
-                return (adj[0], adj[1] * sqrt(2) * 0.5 + startCell[1] * sqrt(2) * 0.5)
+                return (adj[0], (adj[1] + startCell[1]) * sqrt(2) * 0.5)
         return None
 
     #top-left

@@ -232,7 +232,7 @@ if __name__ == '__main__':
     show_level(level, path)
 
     
-    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
+    filename, src_waypoint, dst_waypoint = 'test_maze.txt', 'a','e'
 
     # Use this function call to find the route between two waypoints.
     #test_route(filename, src_waypoint, dst_waypoint)
