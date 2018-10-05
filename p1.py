@@ -64,15 +64,9 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     counter = 0
 
     while unvisited:
+        #get next cell and the path to it
         next_cell = unvisited.pop()
-        
-        if next_cell == (3,2):
-            print(next_cell)
-        
         path = dijkstras_shortest_path(initial_position, next_cell, graph, adj)
-
-        counter += 1
-        print(counter)
 
         #get the accumulated cost of each node in the path
         total_cost = 0
@@ -244,4 +238,4 @@ if __name__ == '__main__':
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-    cost_to_all_cells(filename, src_waypoint, 'my_costs_4.csv')
+    cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
