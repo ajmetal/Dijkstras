@@ -21,6 +21,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
 
     while queue:
         current_cost, current_cell = heappop(queue)
+
         if current_cell == destination:
             path = []
             n = destination
@@ -36,7 +37,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
                 if adj_cell not in dist or alt < dist[adj_cell]:
                     prev[adj_cell] = current_cell
                     dist[adj_cell] = alt
-                    heappush(queue, (adj_cost, adj_cell))
+                    heappush(queue, (alt, adj_cell))
     return(-1) 
 
 
@@ -57,18 +58,16 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     unvisited = list(graph['spaces'])
 
     #the path to a wall has infinite cost, as walls have infinite cost
-    for cell in graph['walls']:
-        to_return[cell] = inf
+    #for cell in graph['walls']:
+        #to_return[cell] = inf
 
     counter = 0
 
     while unvisited:
         next_cell = unvisited.pop()
-
-        #catch the initial_position when it comes up, as a path of size 1 will mess up the code
-        if next_cell == initial_position:
-            to_return[next_cell] = 0
-            continue
+        
+        if next_cell == (3,2):
+            print(next_cell)
         
         path = dijkstras_shortest_path(initial_position, next_cell, graph, adj)
 
@@ -80,8 +79,7 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
         prev = initial_position
         for node in path:
             if node in level['walls']:
-                print("ERROR: path contains a wall: ", path)
-                total_cost = 9999999
+                total_cost = inf
                 break
             elif node != initial_position:
                 total_cost += do_math(level, prev, node)
