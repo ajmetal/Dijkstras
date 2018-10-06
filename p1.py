@@ -39,7 +39,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
     return(-1) 
 
 
-def dijkstras_shortest_path_to_all(initial_position, graph, adj):
+def dijkstras_shortest_path_to_all(initial_position, level, adj):
     """ Calculates the minimum cost to every reachable cell in a graph from the initial_position.
 		Args:
         initial_position: The initial cell from which the path extends.
@@ -53,22 +53,22 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
     to_return = {initial_position: 0}
     
     #populate the set of all possible (non-wall) destinations in a list called unvisited
-    unvisited = list(graph['spaces'])
+    unvisited = list(level['spaces'])
 
     while unvisited:
         #get next cell and the path to it
         next_cell = unvisited.pop()
-        path = dijkstras_shortest_path(initial_position, next_cell, graph, adj)
+        path = dijkstras_shortest_path(initial_position, next_cell, level, adj)
 
         #get the accumulated cost of each node in the path
         total_cost = 0
         prev = initial_position
         for node in path:
-            if node in graph['walls']:
+            if node in level['walls']:
                 total_cost = inf
                 break
             elif node != initial_position:
-                total_cost += do_math(graph, prev, node)
+                total_cost += do_math(level, prev, node)
             prev = node
 
         #put it in the dictionary
@@ -124,7 +124,7 @@ def navigation_edges(level, cell):
             startCell = (cell, level['spaces'][cell])
         if cell in level['walls']:
             startCell = (cell, inf)
-        #print('startCell: ', startCell, startCell[0], startCell[1])
+
         if coords in level['spaces'] and not diagonal:
             return (coords, level['spaces'][coords] * 0.5 + startCell[1] * 0.5)
         elif coords in level['spaces'] and diagonal:
@@ -202,6 +202,7 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
     # Load and display the level.
     level = load_level(filename)
     show_level(level)
+
 
     # Retrieve the source coordinates from the level.
     src = level['waypoints'][src_waypoint]
