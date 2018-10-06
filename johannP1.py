@@ -97,9 +97,15 @@ def navigation_edges(level, cell):
              ((1,1), 1.4142135623730951),
              ... ]
     """
-    xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
-    dimX = max(xs)
-    dimY = max(ys)
+    if 'dimX' not in level or 'dimY' not in level:  
+        xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
+        dimX = max(xs)
+        dimY = max(ys)
+        level['dimX'] = dimX
+        level['dimY'] = dimY
+    else:
+        dimX = level['dimX']
+        dimY = level['dimY']
 
     adjList = []
     x = cell[0]
@@ -200,16 +206,18 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
 
 if __name__ == '__main__':
 
-    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
+    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','d'
 
     level = load_level(filename)
     src = level['waypoints'][src_waypoint]
     dst = level['waypoints'][dst_waypoint]
 
-    path = dijkstras_shortest_path(src, dst, level, navigation_edges)
+    #path = dijkstras_shortest_path(src, dst, level, navigation_edges)
 
     # Use this function call to find the route between two waypoints.
-    test_route(filename, src_waypoint, dst_waypoint)
+    #test_route(filename, src_waypoint, dst_waypoint)
+
+
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
     cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')

@@ -224,14 +224,10 @@ if __name__ == '__main__':
 
     save_level('path_file.txt', level, path)
     
-<<<<<<< HEAD
-    filename, src_waypoint, dst_waypoint = 'test_maze.txt', 'a','e'
-=======
     #filename, src_waypoint, dst_waypoint = 'my_maze.txt', 'a','d'
->>>>>>> 50256acc3cdb06dfdc48a1c656ed8ea2bd83a0d0
 
     # Use this function call to find the route between two waypoints.
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-    #cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
+    # cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
