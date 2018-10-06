@@ -1,14 +1,14 @@
-from p1_support import load_level, show_level, save_level_costs, save_level
+from p1_support import load_level, show_level, save_level_costs
 from math import inf, sqrt
 from heapq import heappop, heappush, heapify
 
 
-def dijkstras_shortest_path(initial_position, destination, graph, adj):
+def dijkstras_shortest_path(initial_position, destination, level, adj):
     """ Searches for a minimal cost path through a graph using Dijkstra's algorithm.
     Args:
         initial_position: The initial cell from which the path extends.
         destination: The end location for the path.
-        graph: A loaded level, containing walls, spaces, and waypoints.
+        level: A loaded level, containing walls, spaces, and waypoints.
         adj: An adjacency function returning cells adjacent to a given cell as well as their respective edge costs.
     Returns:
         If a path exits, return a list containing all cells from initial_position to destination.
@@ -30,7 +30,7 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
             path.append(destination)
             return path
         else:
-            for adj_cell, adj_cost in adj(graph, current_cell):
+            for adj_cell, adj_cost in adj(level, current_cell):
                 alt = dist[current_cell] + adj_cost
                 if adj_cell not in dist or alt < dist[adj_cell]:
                     prev[adj_cell] = current_cell
@@ -43,16 +43,16 @@ def dijkstras_shortest_path_to_all(initial_position, level, adj):
     """ Calculates the minimum cost to every reachable cell in a graph from the initial_position.
 		Args:
         initial_position: The initial cell from which the path extends.
-        graph: A loaded level, containing walls, spaces, and waypoints.
+        level: A loaded level, containing walls, spaces, and waypoints.
         adj: An adjacency function returning cells adjacent to a given cell as well as their respective edge costs.
 		Returns:
         A dictionary, mapping destination cells to the cost of a path from the initial_position.
-	"""
+		"""
     
     #to_return is a dictionary of costs
     to_return = {initial_position: 0}
     
-    #populate the set of all possible (non-wall) destinations in a list called unvisited
+    #populate a list of all possible (non-wall) destinations
     unvisited = list(level['spaces'])
 
     while unvisited:
@@ -71,7 +71,7 @@ def dijkstras_shortest_path_to_all(initial_position, level, adj):
                 total_cost += do_math(level, prev, node)
             prev = node
 
-        #put it in the dictionary
+        #put this cell and its cost in the dictionary
         to_return[next_cell] = total_cost
 
     return to_return
@@ -105,6 +105,7 @@ def navigation_edges(level, cell):
              ((1,1), 1.4142135623730951),
              ... ]
     """
+    #get the level borders
     if 'dimX' not in level or 'dimY' not in level:  
         xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
         dimX = max(xs)
@@ -159,7 +160,8 @@ def navigation_edges(level, cell):
     #left
     if x > 0:
         adjList.append(checkAdjacent((x - 1, y), level))
-   
+
+   #catch any nonsense
     while None in adjList:
         adjList.remove(None)
 
@@ -203,7 +205,6 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
     level = load_level(filename)
     show_level(level)
 
-
     # Retrieve the source coordinates from the level.
     src = level['waypoints'][src_waypoint]
     
@@ -212,12 +213,11 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
     save_level_costs(level, costs_to_all_cells, output_filename)
 
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':     
     filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
-    
+
     # Use this function call to find the route between two waypoints.
-    
     test_route(filename, src_waypoint, dst_waypoint)
-    
+
+    # Use this function to calculate the cost to all reachable cells from an origin point.
     cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
