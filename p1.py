@@ -215,7 +215,7 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
 
 if __name__ == '__main__':
     # Load and display the level.
-    level = load_level('test_maze.txt')
+    level = load_level('example.txt')
     show_level(level)
     
     # Retrieve the source coordinates from the level.
