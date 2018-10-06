@@ -2,6 +2,15 @@ from p1_support import load_level, show_level, save_level_costs
 from math import inf, sqrt
 from heapq import heappop, heappush, heapify
 
+'''
+Authors:
+
+Patricia Ellis do Amaral (CruzID: pellisdo)
+
+Johannes Spaulding (CruzID: aspauldi)
+
+'''
+
 
 def dijkstras_shortest_path(initial_position, destination, level, adj):
     """ Searches for a minimal cost path through a graph using Dijkstra's algorithm.
