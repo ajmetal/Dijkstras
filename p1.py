@@ -14,7 +14,6 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
         If a path exits, return a list containing all cells from initial_position to destination.
         Otherwise, return None.
     """
-    #initial_position = (initial_position, 0)
     queue = [(0, initial_position)]
     dist = {initial_position : 0}
     prev = {}
@@ -32,7 +31,6 @@ def dijkstras_shortest_path(initial_position, destination, graph, adj):
             return path
         else:
             for adj_cell, adj_cost in adj(graph, current_cell):
-                #print('adj: ', adj_node)
                 alt = dist[current_cell] + adj_cost
                 if adj_cell not in dist or alt < dist[adj_cell]:
                     prev[adj_cell] = current_cell
@@ -49,7 +47,7 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
         adj: An adjacency function returning cells adjacent to a given cell as well as their respective edge costs.
 		Returns:
         A dictionary, mapping destination cells to the cost of a path from the initial_position.
-		"""
+	"""
     
     #to_return is a dictionary of costs
     to_return = {initial_position: 0}
@@ -212,30 +210,9 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
     costs_to_all_cells = dijkstras_shortest_path_to_all(src, level, navigation_edges)
     save_level_costs(level, costs_to_all_cells, output_filename)
 
-
 if __name__ == '__main__':
-    # Load and display the level.
-    #level = load_level('example.txt')
-    #show_level(level)
-
-    # Retrieve the source coordinates from the level.
-    #src = level['waypoints']['a']
-    #print(src)
-    #print(level)
-    #destination = level['waypoints']['e']
-
-    #path = dijkstras_shortest_path(src, destination, level, navigation_edges)
-    #show_level(level, path)
-
-    #save_level('path_file.txt', level, path)
+    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','e'
     
-    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','d'
-
-    #src = level['waypoints'][src_waypoint]
-    #dst = level['waypoints'][dst_waypoint]
-
-    # Use this function call to find the route between two waypoints.
-    #test_route(filename, src_waypoint, dst_waypoint)
-
-    # Use this function to calculate the cost to all reachable cells from an origin point.
-    cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
+    test_route(filename, src_waypoint, dst_waypoint)
+    
+    cost_to_all_cells(filename, src_waypoint, 'my_costs.csv')
