@@ -66,11 +66,11 @@ def dijkstras_shortest_path_to_all(initial_position, graph, adj):
         total_cost = 0
         prev = initial_position
         for node in path:
-            if node in level['walls']:
+            if node in graph['walls']:
                 total_cost = inf
                 break
             elif node != initial_position:
-                total_cost += do_math(level, prev, node)
+                total_cost += do_math(graph, prev, node)
             prev = node
 
         #put it in the dictionary
@@ -107,9 +107,15 @@ def navigation_edges(level, cell):
              ((1,1), 1.4142135623730951),
              ... ]
     """
-    xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
-    dimX = max(xs)
-    dimY = max(ys)
+    if 'dimX' not in level or 'dimY' not in level:  
+        xs, ys = zip(*(list(level['spaces'].keys()) + list(level['walls'])))
+        dimX = max(xs)
+        dimY = max(ys)
+        level['dimX'] = dimX
+        level['dimY'] = dimY
+    else:
+        dimX = level['dimX']
+        dimY = level['dimY']
 
     adjList = []
     x = cell[0]
@@ -199,7 +205,6 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
     level = load_level(filename)
     show_level(level)
 
-
     # Retrieve the source coordinates from the level.
     src = level['waypoints'][src_waypoint]
     
@@ -210,24 +215,27 @@ def cost_to_all_cells(filename, src_waypoint, output_filename):
 
 if __name__ == '__main__':
     # Load and display the level.
-    level = load_level('example.txt')
-    show_level(level)
+    #level = load_level('example.txt')
+    #show_level(level)
 
     # Retrieve the source coordinates from the level.
-    src = level['waypoints']['a']
-    print(src)
-    print(level)
-    destination = level['waypoints']['e']
+    #src = level['waypoints']['a']
+    #print(src)
+    #print(level)
+    #destination = level['waypoints']['e']
 
-    path = dijkstras_shortest_path(src, destination, level, navigation_edges)
-    show_level(level, path)
+    #path = dijkstras_shortest_path(src, destination, level, navigation_edges)
+    #show_level(level, path)
 
-    save_level('path_file.txt', level, path)
+    #save_level('path_file.txt', level, path)
     
-    #filename, src_waypoint, dst_waypoint = 'my_maze.txt', 'a','d'
+    filename, src_waypoint, dst_waypoint = 'example.txt', 'a','d'
+
+    #src = level['waypoints'][src_waypoint]
+    #dst = level['waypoints'][dst_waypoint]
 
     # Use this function call to find the route between two waypoints.
     #test_route(filename, src_waypoint, dst_waypoint)
 
     # Use this function to calculate the cost to all reachable cells from an origin point.
-    # cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
+    cost_to_all_cells(filename, src_waypoint, 'my_maze_costs.csv')
